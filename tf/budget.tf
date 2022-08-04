@@ -41,4 +41,5 @@ resource "azurerm_consumption_budget_resource_group" "budget" {
       "Owner",
     ]
   }
+  tags = var.tags
 }

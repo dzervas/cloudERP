@@ -10,6 +10,7 @@ resource "azurerm_network_interface" "appserver" {
     subnet_id                     = azurerm_subnet.vpn.id
     private_ip_address_allocation = "Dynamic"
   }
+  tags = var.tags
 }
 
 # Firewall
@@ -18,6 +19,7 @@ resource "azurerm_network_security_group" "appserver" {
   name                = "cloudERP-appserver"
   location            = azurerm_resource_group.base.location
   resource_group_name = azurerm_resource_group.base.name
+  tags = var.tags
 }
 
 resource "azurerm_network_security_rule" "appserver-rdp" {
@@ -34,6 +36,7 @@ resource "azurerm_network_security_rule" "appserver-rdp" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.base.name
   network_security_group_name = azurerm_network_security_group.appserver.name
+  tags = var.tags
 }
 
 # Virtual Machine
@@ -66,8 +69,5 @@ resource "azurerm_windows_virtual_machine" "appserver" {
     version   = var.appserver_image_version
   }
 
-  tags = {
-    app = "cloudERP"
-    environment = var.environment
-  }
+  tags = var.tags
 }

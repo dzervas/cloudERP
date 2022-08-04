@@ -6,10 +6,7 @@
 #   account_replication_type        = var.reduntancy
 #   allow_nested_items_to_be_public = false
 
-#   tags {
-#     app = "cloudERP"
-#     environment = var.environment
-#   }
+#   tags = var.tags
 # }
 
 resource "azurerm_mssql_server" "sqlserver" {
@@ -21,10 +18,7 @@ resource "azurerm_mssql_server" "sqlserver" {
   administrator_login_password = var.sqlserver_administrator_password
   public_network_access_enabled = false
 
-  tags = {
-    app = "cloudERP"
-    environment = var.environment
-  }
+  tags = var.tags
 }
 
 resource "azurerm_mssql_database" "sqlserver" {
@@ -50,8 +44,5 @@ resource "azurerm_mssql_database" "sqlserver" {
   }
 
 
-  tags = {
-    app = "cloudERP"
-    environment = var.environment
-  }
+  tags = var.tags
 }

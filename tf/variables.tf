@@ -123,3 +123,12 @@ variable "appserver_image_version" {
   description = "Image Version for the App Server"
   default = "latest"
 }
+
+variable "tags" {
+  type = map(string)
+  default = {
+    app = "cloudERP"
+    environment = var.environment
+    client = "me"
+  }
+}
