@@ -117,7 +117,7 @@ variable "appserver_image_offer" {
 variable "appserver_image_sku" {
   type        = string
   description = "Image SKU for the App Server"
-  default     = "2022-datacenter-azure-edition-core"
+  default     = "2022-datacenter-azure-edition"
 }
 variable "appserver_image_version" {
   type        = string

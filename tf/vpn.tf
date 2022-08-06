@@ -87,7 +87,7 @@ resource "azurerm_virtual_network_gateway" "vpn_remote" {
 
   active_active = false
   enable_bgp    = false
-  sku           = "Basic"
+  sku           = "Standard"
 
   ip_configuration {
     name                          = "CloudERP-vpn-ip-config"
@@ -105,98 +105,101 @@ resource "azurerm_virtual_network_gateway" "vpn_remote" {
       public_cert_data = var.vpn_public_key
     }
 
-    vpn_client_protocols = [ "SSTP" ]
+    vpn_client_protocols = [ "SSTP", "IkeV2" ]
+  }
+
+  custom_route {
+    address_prefixes = [ var.vpn_address_space ]
   }
 
   tags = var.tags
 }
 
-# resource "azurerm_monitor_diagnostic_setting" "gw" {
-#   count                      = var.log_analytics_workspace_id != null ? 1 : 0
-#   name                       = "gw-analytics"
-#   target_resource_id         = azurerm_virtual_network_gateway.gw.id
-#   log_analytics_workspace_id = var.log_analytics_workspace_id
+resource "azurerm_monitor_diagnostic_setting" "vpn_remote_gateway" {
+  name                       = "vpn-remote-gateway-analytics"
+  target_resource_id         = azurerm_virtual_network_gateway.vpn_remote.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
 
-#   log {
-#     category = "GatewayDiagnosticLog"
+  log {
+    category = "GatewayDiagnosticLog"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
 
-#   log {
-#     category = "TunnelDiagnosticLog"
+  log {
+    category = "TunnelDiagnosticLog"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
 
-#   log {
-#     category = "RouteDiagnosticLog"
+  log {
+    category = "RouteDiagnosticLog"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
 
-#   log {
-#     category = "IKEDiagnosticLog"
+  log {
+    category = "IKEDiagnosticLog"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
 
-#   log {
-#     category = "P2SDiagnosticLog"
+  log {
+    category = "P2SDiagnosticLog"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
 
-#   metric {
-#     category = "AllMetrics"
+  metric {
+    category = "AllMetrics"
 
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
+    retention_policy {
+      enabled = false
+    }
+  }
+}
+
+# resource "azurerm_local_network_gateway" "vpn_local" {
+#   name                = "CloudERP-vpn-gateway-local"
+#   location            = azurerm_resource_group.base.location
+#   resource_group_name = azurerm_resource_group.base.name
+#   gateway_address     = "10.80.40.100"
+#   address_space       = [ "10.80.40.0/24" ]
+
+#   tags = var.tags
 # }
 
-resource "azurerm_local_network_gateway" "vpn_local" {
-  name                = "CloudERP-vpn-gateway-local"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
-  gateway_address     = "10.80.40.100"
-  address_space       = [ "10.80.40.0/24" ]
+# resource "azurerm_virtual_network_gateway_connection" "local" {
+#   name                = "CloudERP-vpn-gateway-local-connection"
+#   location            = azurerm_resource_group.base.location
+#   resource_group_name = azurerm_resource_group.base.name
 
-  tags = var.tags
-}
+#   type                       = "IPsec"
+#   virtual_network_gateway_id = azurerm_virtual_network_gateway.vpn_remote.id
+#   local_network_gateway_id   = azurerm_local_network_gateway.vpn_local.id
 
-resource "azurerm_virtual_network_gateway_connection" "local" {
-  name                = "CloudERP-vpn-gateway-local-connection"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+#   # shared_key = var.local_networks[count.index].shared_key
 
-  type                       = "IPsec"
-  virtual_network_gateway_id = azurerm_virtual_network_gateway.vpn_remote.id
-  local_network_gateway_id   = azurerm_local_network_gateway.vpn_local.id
+#   # ipsec_policy {
+#   #   dh_group         = var.local_networks[count.index].ipsec_policy.dh_group
+#   #   ike_encryption   = var.local_networks[count.index].ipsec_policy.ike_encryption
+#   #   ike_integrity    = var.local_networks[count.index].ipsec_policy.ike_integrity
+#   #   ipsec_encryption = var.local_networks[count.index].ipsec_policy.ipsec_encryption
+#   #   ipsec_integrity  = var.local_networks[count.index].ipsec_policy.ipsec_integrity
+#   #   pfs_group        = var.local_networks[count.index].ipsec_policy.pfs_group
+#   #   sa_datasize      = var.local_networks[count.index].ipsec_policy.sa_datasize
+#   #   sa_lifetime      = var.local_networks[count.index].ipsec_policy.sa_lifetime
+#   # }
 
-  # shared_key = var.local_networks[count.index].shared_key
-
-  # ipsec_policy {
-  #   dh_group         = var.local_networks[count.index].ipsec_policy.dh_group
-  #   ike_encryption   = var.local_networks[count.index].ipsec_policy.ike_encryption
-  #   ike_integrity    = var.local_networks[count.index].ipsec_policy.ike_integrity
-  #   ipsec_encryption = var.local_networks[count.index].ipsec_policy.ipsec_encryption
-  #   ipsec_integrity  = var.local_networks[count.index].ipsec_policy.ipsec_integrity
-  #   pfs_group        = var.local_networks[count.index].ipsec_policy.pfs_group
-  #   sa_datasize      = var.local_networks[count.index].ipsec_policy.sa_datasize
-  #   sa_lifetime      = var.local_networks[count.index].ipsec_policy.sa_lifetime
-  # }
-
-  tags = var.tags
-}
+#   tags = var.tags
+# }

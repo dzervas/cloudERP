@@ -54,7 +54,7 @@ resource "azurerm_windows_virtual_machine" "appserver" {
   admin_username      = var.appserver_administrator_login
   admin_password      = var.appserver_administrator_password
   patch_mode          = "AutomaticByPlatform"
-  hotpatching_enabled = true
+  # hotpatching_enabled = true
   # TODO: Termination notification
   network_interface_ids = [
     azurerm_network_interface.appserver.id,
@@ -74,4 +74,42 @@ resource "azurerm_windows_virtual_machine" "appserver" {
   }
 
   tags = var.tags
+}
+
+# Backups
+
+resource "azurerm_recovery_services_vault" "appserver" {
+  name                = "CloudERP-appserver-vault"
+  location            = azurerm_resource_group.base.location
+  resource_group_name = azurerm_resource_group.base.name
+  sku                 = "Standard"
+  storage_mode_type   = "LocallyRedundant"
+}
+
+resource "azurerm_backup_policy_vm" "appserver" {
+  name                = "CloudERP-appserver-backup"
+  resource_group_name = azurerm_resource_group.base.name
+  recovery_vault_name = azurerm_recovery_services_vault.appserver.name
+
+  timezone = "GTB Standard Time" # Europe/Athens https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/
+
+  backup {
+    frequency = "Daily"
+    time      = "20:00"
+  }
+
+  retention_daily {
+    count = 7
+  }
+
+  retention_weekly {
+    count    = 4
+    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ]
+  }
+
+  retention_monthly {
+    count    = 3
+    weekdays = ["Monday"]
+    weeks    = ["First", "Second", "Third", "Fourth"]
+  }
 }
