@@ -1,7 +1,7 @@
 # Network
 
 resource "azurerm_network_interface" "appserver" {
-  name                = "cloudERP-appserver-nic"
+  name                = "clouderp-appserver-nic"
   location            = azurerm_resource_group.base.location
   resource_group_name = azurerm_resource_group.base.name
 
@@ -16,14 +16,14 @@ resource "azurerm_network_interface" "appserver" {
 # Firewall
 
 resource "azurerm_network_security_group" "appserver" {
-  name                = "cloudERP-appserver-sg"
+  name                = "clouderp-appserver-sg"
   location            = azurerm_resource_group.base.location
   resource_group_name = azurerm_resource_group.base.name
   tags                = var.tags
 }
 
 resource "azurerm_network_security_rule" "appserver_rdp" {
-  name                   = "cloudERP-appserver-sg-rule-RDP"
+  name                   = "clouderp-appserver-sg-rule-RDP"
   priority               = 100
   direction              = "Inbound"
   access                 = "Allow"
@@ -46,7 +46,7 @@ resource "azurerm_network_interface_security_group_association" "appserver" {
 # Virtual Machine
 
 resource "azurerm_windows_virtual_machine" "appserver" {
-  name                = "cloudERP-appserver"
+  name                = "clouderp-appserver"
   computer_name       = "appserver"
   resource_group_name = azurerm_resource_group.base.name
   location            = azurerm_resource_group.base.location
@@ -79,7 +79,7 @@ resource "azurerm_windows_virtual_machine" "appserver" {
 # Backups
 
 resource "azurerm_recovery_services_vault" "appserver" {
-  name                = "CloudERP-appserver-vault"
+  name                = "clouderp-appserver-vault"
   location            = azurerm_resource_group.base.location
   resource_group_name = azurerm_resource_group.base.name
   sku                 = "Standard"
@@ -87,7 +87,7 @@ resource "azurerm_recovery_services_vault" "appserver" {
 }
 
 resource "azurerm_backup_policy_vm" "appserver" {
-  name                = "CloudERP-appserver-backup"
+  name                = "clouderp-appserver-backup"
   resource_group_name = azurerm_resource_group.base.name
   recovery_vault_name = azurerm_recovery_services_vault.appserver.name
 
@@ -111,5 +111,28 @@ resource "azurerm_backup_policy_vm" "appserver" {
     count    = 3
     weekdays = ["Monday"]
     weeks    = ["First", "Second", "Third", "Fourth"]
+  }
+}
+
+# Logging
+
+data "azurerm_monitor_diagnostic_categories" "appserver" {
+  resource_id = azurerm_windows_virtual_machine.appserver.id
+}
+
+resource "azurerm_monitor_diagnostic_setting" "appserver" {
+  name                       = "clouderp-appserver-vm-analytics"
+  target_resource_id         = azurerm_windows_virtual_machine.appserver.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
+
+  dynamic "log" {
+    for_each = data.azurerm_monitor_diagnostic_categories.appserver.logs
+    content {
+      category = log
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
   }
 }

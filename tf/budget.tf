@@ -2,7 +2,7 @@ data "azurerm_subscription" "current" {
 }
 
 resource "azurerm_consumption_budget_resource_group" "budget" {
-  name              = "CloudERP-Budget"
+  name              = "clouderp-budget"
   resource_group_id = azurerm_resource_group.base.id
 
   amount     = 100

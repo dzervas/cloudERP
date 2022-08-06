@@ -128,7 +128,7 @@ variable "appserver_image_version" {
 variable "tags" {
   type = map(string)
   default = {
-    app         = "CloudERP"
+    app         = "clouderp"
     environment = "testing"
     client      = "me"
   }

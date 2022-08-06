@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "base" {
-  name     = "cloudERP"
+  name     = "clouderp"
   location = "France Central"
 
   tags = var.tags

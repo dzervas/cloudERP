@@ -1,14 +1,3 @@
-# resource "azurerm_storage_account" "sqlserver" {
-#   name                            = "cloudERP-sqlserver-storage"
-#   resource_group_name             = azurerm_resource_group.base.name
-#   location                        = azurerm_resource_group.base.location
-#   account_tier                    = "Standard"
-#   account_replication_type        = var.reduntancy
-#   allow_nested_items_to_be_public = false
-
-#   tags = var.tags
-# }
-
 resource "azurerm_mssql_server" "sqlserver" {
   name                         = "clouderp-sqlserver"
   resource_group_name          = azurerm_resource_group.base.name
@@ -23,7 +12,7 @@ resource "azurerm_mssql_server" "sqlserver" {
 
 resource "azurerm_mssql_database" "sqlserver" {
   count = length(var.sqlserver_databases)
-  name           = "cloudERP-${var.sqlserver_databases[count.index]}"
+  name           = "clouderp-${var.sqlserver_databases[count.index]}"
   server_id      = azurerm_mssql_server.sqlserver.id
   collation      = var.sqlserver_database_collation
   # license_type   = var.sqlserver_database_license
@@ -45,4 +34,50 @@ resource "azurerm_mssql_database" "sqlserver" {
 
 
   tags = var.tags
+}
+
+# Logging
+
+data "azurerm_monitor_diagnostic_categories" "sqlserver" {
+  resource_id = azurerm_mssql_server.sqlserver.id
+}
+
+resource "azurerm_monitor_diagnostic_setting" "sqlserver" {
+  name                       = "clouderp-sqlserver-server-analytics"
+  target_resource_id         = azurerm_mssql_server.sqlserver.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
+
+  dynamic "log" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sqlserver.logs
+    content {
+      category = log
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+  }
+}
+
+data "azurerm_monitor_diagnostic_categories" "sqlserver_database" {
+  count = length(var.sqlserver_databases)
+  resource_id = azurerm_mssql_database.sqlserver[count.index].id
+}
+
+resource "azurerm_monitor_diagnostic_setting" "sqlserver_database" {
+  count = length(var.sqlserver_databases)
+  name                       = "clouderp-sqlserver-database-analytics-${count.index}"
+  target_resource_id         = azurerm_mssql_database.sqlserver[count.index].id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
+
+  dynamic "log" {
+    for_each = data.azurerm_monitor_diagnostic_categories.sqlserver_database[count.index].logs
+    content {
+      category = log
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+  }
 }
