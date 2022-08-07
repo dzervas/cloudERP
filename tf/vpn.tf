@@ -22,7 +22,7 @@ resource "azurerm_subnet" "vpn" {
   name                 = "GatewaySubnet"
   resource_group_name  = azurerm_resource_group.base.name
   virtual_network_name = azurerm_virtual_network.network.name
-  address_prefixes     = [ "10.80.80.0/25" ]
+  address_prefixes     = ["10.80.80.0/25"]
 }
 
 # Most code got from https://github.com/avinor/terraform-azurerm-vpn
@@ -58,7 +58,7 @@ resource "azurerm_virtual_network_gateway" "vpn_remote" {
   }
 
   vpn_client_configuration {
-    address_space = [ "10.80.40.0/24" ]
+    address_space = ["10.80.40.0/24"]
 
     root_certificate {
       name = "VPN-Certificate"
@@ -66,11 +66,11 @@ resource "azurerm_virtual_network_gateway" "vpn_remote" {
       public_cert_data = var.vpn_public_key
     }
 
-    vpn_client_protocols = [ "SSTP", "IkeV2" ]
+    vpn_client_protocols = ["SSTP", "IkeV2"]
   }
 
   custom_route {
-    address_prefixes = [ var.vpn_address_space ]
+    address_prefixes = [var.vpn_address_space]
   }
 
   tags = var.tags

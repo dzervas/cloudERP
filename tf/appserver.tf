@@ -105,7 +105,7 @@ resource "azurerm_backup_policy_vm" "appserver" {
 
   retention_weekly {
     count    = 4
-    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ]
+    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
   }
 
   retention_monthly {

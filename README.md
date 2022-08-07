@@ -1,5 +1,7 @@
 # Azure setup
 
+See [this](https://registry.terraform.io/providers/hashicorp/azurerm/2.35.0/docs/guides/service_principal_client_secret)
+
 - `ARM_SUBSCRIPTION_ID`: Dashboard > Subscriptions copy Subscription ID
 - `ARM_TENANT_ID`: Dashboard > Azure Active Directory > Overview copy Tenant ID
 - Go to Dashboard > Azure Active Directory > Enterprise Applications and create a new application
