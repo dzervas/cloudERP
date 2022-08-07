@@ -18,6 +18,7 @@ resource "azurerm_mssql_database" "sqlserver" {
   # license_type   = var.sqlserver_database_license
   sku_name       = var.sqlserver_database_sku
   storage_account_type = var.sqlserver_database_storage_type
+  # TODO: Disable external access
   # TODO: Tinker this
   # auto_pause_delay_in_minutes = 10
 
@@ -50,7 +51,7 @@ resource "azurerm_monitor_diagnostic_setting" "sqlserver" {
   dynamic "log" {
     for_each = data.azurerm_monitor_diagnostic_categories.sqlserver.logs
     content {
-      category = log
+      category = log.value
     }
   }
 
@@ -73,7 +74,7 @@ resource "azurerm_monitor_diagnostic_setting" "sqlserver_database" {
   dynamic "log" {
     for_each = data.azurerm_monitor_diagnostic_categories.sqlserver_database[count.index].logs
     content {
-      category = log
+      category = log.value
     }
   }
 

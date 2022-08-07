@@ -8,7 +8,8 @@ resource "azurerm_network_interface" "appserver" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.network.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.80.80.200"
   }
   tags = var.tags
 }
@@ -128,7 +129,7 @@ resource "azurerm_monitor_diagnostic_setting" "appserver" {
   dynamic "log" {
     for_each = data.azurerm_monitor_diagnostic_categories.appserver.logs
     content {
-      category = log
+      category = log.value
     }
   }
 

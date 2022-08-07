@@ -20,7 +20,6 @@ Needs ESP Custom Cipher `aes256gcm16`
 - Fix in-VPN DNS
 - SQL server static IP & domain
 - Appserver static IP & domain
-- Monitoring & logging of appserver, sqlserver & VPN
 - Monitoring, logging & health dashboard
 - Alerting
 - IAM user groups
@@ -35,4 +34,3 @@ Needs ESP Custom Cipher `aes256gcm16`
 - VM & SQL server reservation
 - Billing IAM account & e-mails
 - Use pre-bought licenses
-

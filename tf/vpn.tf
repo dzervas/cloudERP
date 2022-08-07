@@ -30,7 +30,6 @@ resource "azurerm_public_ip" "vpn" {
   name                = "cloudERP-vpn-ip"
   location            = azurerm_resource_group.base.location
   resource_group_name = azurerm_resource_group.base.name
-  domain_name_label   = lower("${var.tags.app}-${var.tags.client}-${var.tags.environment}")
 
   allocation_method = "Dynamic"
   sku               = "Basic"
@@ -38,44 +37,6 @@ resource "azurerm_public_ip" "vpn" {
   tags = var.tags
 }
 
-# resource "azurerm_monitor_diagnostic_setting" "gw_pip" {
-#   count                      = var.log_analytics_workspace_id != null ? 1 : 0
-#   name                       = "gw-pip-log-analytics"
-#   target_resource_id         = azurerm_public_ip.gw.id
-#   log_analytics_workspace_id = var.log_analytics_workspace_id
-
-#   log {
-#     category = "DDoSProtectionNotifications"
-
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
-
-#   log {
-#     category = "DDoSMitigationFlowLogs"
-
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
-
-#   log {
-#     category = "DDoSMitigationReports"
-
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
-
-#   metric {
-#     category = "AllMetrics"
-
-#     retention_policy {
-#       enabled = false
-#     }
-#   }
-# }
 
 resource "azurerm_virtual_network_gateway" "vpn_remote" {
   name                = "clouderp-vpn-gateway"
@@ -128,7 +89,7 @@ resource "azurerm_monitor_diagnostic_setting" "vpn_remote" {
   dynamic "log" {
     for_each = data.azurerm_monitor_diagnostic_categories.vpn_remote.logs
     content {
-      category = log
+      category = log.value
     }
   }
 
