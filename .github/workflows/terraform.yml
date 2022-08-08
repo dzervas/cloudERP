@@ -26,13 +26,14 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
     defaults:
       run:
-        working-directory: ./tf
+        working-directory: ./deployment
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      TF_VAR_tfstate_storage_account_name: ${{ secrets.TFSTATE_STORAGE_ACCOUNT_NAME }}
+      TFSTATE_STORAGE_ACCOUNT_NAME: ${{ secrets.TFSTATE_STORAGE_ACCOUNT_NAME }}
+      TFSTATE_RESOURCE_GROUP_NAME: ${{ secrets.TFSTATE_RESOURCE_GROUP_NAME }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Terraform
@@ -42,8 +43,11 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
+      - name: Terraform backend config
+        run: echo -e "resource_group_name=\"$TFSTATE_RESOURCE_GROUP_NAME\"\nstorage_account_name=\"$TFSTATE_STORAGE_ACCOUNT_NAME\"" > backend_config.ini
+
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config backend_config.ini
 
       - name: Terraform Validate
         run: terraform validate

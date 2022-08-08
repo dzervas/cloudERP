@@ -30,7 +30,6 @@ resource "azurerm_mssql_database" "sqlserver" {
     weekly_retention  = var.sqlserver_database_retention_weeks
     monthly_retention = var.sqlserver_database_retention_months
     yearly_retention  = "PT0S"
-    week_of_year      = 1
   }
 
 

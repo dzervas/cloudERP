@@ -4,11 +4,6 @@ variable "reduntancy" {
   default     = "LRS" # Lowest cost
 }
 
-variable "tfstate_storage_account_name" {
-  type = string
-  description = "Name of the storage account to use for storing Terraform state"
-}
-
 variable "vpn_address_space" {
   type    = string
   default = "10.80.80.0/24"
