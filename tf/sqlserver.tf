@@ -1,7 +1,7 @@
 resource "azurerm_mssql_server" "sqlserver" {
   name                          = "clouderp-sqlserver"
-  resource_group_name           = azurerm_resource_group.base.name
-  location                      = azurerm_resource_group.base.location
+  resource_group_name           = data.azurerm_resource_group.base.name
+  location                      = data.azurerm_resource_group.base.location
   version                       = var.sqlserver_version
   administrator_login           = var.sqlserver_administrator_login
   administrator_login_password  = var.sqlserver_administrator_password

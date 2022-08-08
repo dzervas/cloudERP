@@ -2,8 +2,8 @@
 
 resource "azurerm_network_interface" "appserver" {
   name                = "clouderp-appserver-nic"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
 
   ip_configuration {
     name                          = "internal"
@@ -18,8 +18,8 @@ resource "azurerm_network_interface" "appserver" {
 
 resource "azurerm_network_security_group" "appserver" {
   name                = "clouderp-appserver-sg"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
   tags                = var.tags
 }
 
@@ -35,7 +35,7 @@ resource "azurerm_network_security_rule" "appserver_rdp" {
   # TODO: Reference the VPN prefix
   source_address_prefixes     = [var.vpn_address_space]
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.base.name
+  resource_group_name         = data.azurerm_resource_group.base.name
   network_security_group_name = azurerm_network_security_group.appserver.name
 }
 
@@ -49,8 +49,8 @@ resource "azurerm_network_interface_security_group_association" "appserver" {
 resource "azurerm_windows_virtual_machine" "appserver" {
   name                = "clouderp-appserver"
   computer_name       = "appserver"
-  resource_group_name = azurerm_resource_group.base.name
-  location            = azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
   size                = var.appserver_size
   admin_username      = var.appserver_administrator_login
   admin_password      = var.appserver_administrator_password
@@ -81,15 +81,15 @@ resource "azurerm_windows_virtual_machine" "appserver" {
 
 resource "azurerm_recovery_services_vault" "appserver" {
   name                = "clouderp-appserver-vault"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
   sku                 = "Standard"
   storage_mode_type   = "LocallyRedundant"
 }
 
 resource "azurerm_backup_policy_vm" "appserver" {
   name                = "clouderp-appserver-backup"
-  resource_group_name = azurerm_resource_group.base.name
+  resource_group_name = data.azurerm_resource_group.base.name
   recovery_vault_name = azurerm_recovery_services_vault.appserver.name
 
   timezone = "GTB Standard Time" # Europe/Athens https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/

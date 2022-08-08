@@ -2,7 +2,14 @@ name: Terraform Deploy
 on:
   workflow_dispatch:
     inputs:
-      version:
+      environment:
+        type: choice
+        description: "Deployment environment"
+        required: true
+        options:
+          - me testing
+        default: me testing
+      operation:
         type: choice
         description: "Operation type"
         required: true
@@ -16,7 +23,7 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    environment: me testing
+    environment: ${{ github.event.inputs.environment }}
     defaults:
       run:
         working-directory: ./tf
@@ -25,24 +32,30 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_VAR_tfstate_storage_account_name: ${{ secrets.TFSTATE_STORAGE_ACCOUNT_NAME }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform fmt
-        id: fmt
         run: terraform fmt -check
         continue-on-error: true
 
       - name: Terraform Init
-        id: init
         run: terraform init
 
       - name: Terraform Validate
-        id: validate
         run: terraform validate
 
       - name: Terraform Plan
-        id: plan
+        if: ${{ github.event.inputs.operation == 'plan' }}
         run: terraform plan
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.operation == 'apply' }}
+        run: terraform apply -auto-approve -input=false
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.operation == 'destroy' }}
+        run: terraform destroy -auto-approve -input=false

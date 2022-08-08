@@ -28,8 +28,6 @@ Needs ESP Custom Cipher `aes256gcm16`
 - Automate IAM user management
 - Automate basic tasks (reboot/reset/backup/restore/etc.)
 - Test restore
-- Move terraform state to Azure
-- GitHub Action for terraform
 - SQL "testing" database panic button
 - Optional SQL automations
 - IAM user per VPN machine?

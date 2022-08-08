@@ -1,26 +1,6 @@
-# resource "azurerm_virtual_hub" "vpn" {
-#   name                = "cloudERP-vpn-hub"
-#   resource_group_name = azurerm_resource_group.base.name
-#   location            = azurerm_resource_group.base.location
-#   virtual_wan_id      = azurerm_virtual_wan.vpn.id
-#   address_prefix      = var.vpn_address_space
-#   tags                = var.tags
-# }
-
-# TODO: Finish the gateway
-# resource "azurerm_vpn_gateway" "vpn" {
-#   name                = "cloudERP-vpn-gateway"
-#   location            = azurerm_resource_group.base.location
-#   resource_group_name = azurerm_resource_group.base.name
-#   virtual_hub_id      = azurerm_virtual_hub.vpn.id
-#   # TODO: Make this basic
-#   # sku                 = "Basic"
-#   tags = var.tags
-# }
-
 resource "azurerm_subnet" "vpn" {
   name                 = "GatewaySubnet"
-  resource_group_name  = azurerm_resource_group.base.name
+  resource_group_name  = data.azurerm_resource_group.base.name
   virtual_network_name = azurerm_virtual_network.network.name
   address_prefixes     = ["10.80.80.0/25"]
 }
@@ -28,8 +8,8 @@ resource "azurerm_subnet" "vpn" {
 # Most code got from https://github.com/avinor/terraform-azurerm-vpn
 resource "azurerm_public_ip" "vpn" {
   name                = "cloudERP-vpn-ip"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
 
   allocation_method = "Dynamic"
   sku               = "Basic"
@@ -40,8 +20,8 @@ resource "azurerm_public_ip" "vpn" {
 
 resource "azurerm_virtual_network_gateway" "vpn_remote" {
   name                = "clouderp-vpn-gateway"
-  location            = azurerm_resource_group.base.location
-  resource_group_name = azurerm_resource_group.base.name
+  location            = data.azurerm_resource_group.base.location
+  resource_group_name = data.azurerm_resource_group.base.name
 
   type     = "Vpn"
   vpn_type = "RouteBased"
