@@ -46,57 +46,57 @@ resource "azurerm_key_vault_certificate_issuer" "automation" {
   }
 }
 
-resource "azurerm_key_vault_certificate" "automation" {
-  count        = length(var.vpn_users)
-  name         = var.vpn_users[count.index]
-  key_vault_id = azurerm_key_vault.automation.id
+# resource "azurerm_key_vault_certificate" "automation" {
+#   count        = length(var.vpn_users)
+#   name         = var.vpn_users[count.index]
+#   key_vault_id = azurerm_key_vault.automation.id
 
-  certificate_policy {
-    issuer_parameters {
-      name = azurerm_key_vault_certificate_issuer.automation.name
-    }
+#   certificate_policy {
+#     issuer_parameters {
+#       name = azurerm_key_vault_certificate_issuer.automation.name
+#     }
 
-    key_properties {
-      exportable = true
-      key_size   = 2048
-      key_type   = "RSA"
-      reuse_key  = true
-    }
+#     key_properties {
+#       exportable = true
+#       key_size   = 2048
+#       key_type   = "RSA"
+#       reuse_key  = true
+#     }
 
-    lifetime_action {
-      action {
-        action_type = "AutoRenew"
-      }
+#     lifetime_action {
+#       action {
+#         action_type = "AutoRenew"
+#       }
 
-      trigger {
-        days_before_expiry = 30
-      }
-    }
+#       trigger {
+#         days_before_expiry = 30
+#       }
+#     }
 
-    secret_properties {
-      content_type = "application/x-pkcs12"
-    }
+#     secret_properties {
+#       content_type = "application/x-pkcs12"
+#     }
 
-    x509_certificate_properties {
-      # Server Authentication = 1.3.6.1.5.5.7.3.1
-      # Client Authentication = 1.3.6.1.5.5.7.3.2
-      extended_key_usage = ["1.3.6.1.5.5.7.3.2"]
+#     x509_certificate_properties {
+#       # Server Authentication = 1.3.6.1.5.5.7.3.1
+#       # Client Authentication = 1.3.6.1.5.5.7.3.2
+#       extended_key_usage = ["1.3.6.1.5.5.7.3.2"]
 
-      key_usage = [
-        "cRLSign",
-        "dataEncipherment",
-        "digitalSignature",
-        "keyAgreement",
-        "keyCertSign",
-        "keyEncipherment",
-      ]
+#       key_usage = [
+#         "cRLSign",
+#         "dataEncipherment",
+#         "digitalSignature",
+#         "keyAgreement",
+#         "keyCertSign",
+#         "keyEncipherment",
+#       ]
 
-      subject_alternative_names {
-        dns_names = ["desktop"]
-      }
+#       subject_alternative_names {
+#         dns_names = ["desktop"]
+#       }
 
-      subject            = "CN=CloudERP VPN"
-      validity_in_months = 24
-    }
-  }
-}
+#       subject            = "CN=CloudERP VPN"
+#       validity_in_months = 24
+#     }
+#   }
+# }

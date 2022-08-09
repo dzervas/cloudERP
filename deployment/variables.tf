@@ -16,8 +16,8 @@ variable "vpn_public_key" {
 }
 
 variable "vpn_users" {
-  type = list(string)
-  default = [ "dzervas" ]
+  type    = list(string)
+  default = ["dzervas"]
 }
 
 variable "sqlserver_version" {
