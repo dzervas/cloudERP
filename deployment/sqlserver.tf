@@ -22,6 +22,7 @@ resource "azurerm_mssql_database" "sqlserver" {
   # TODO: Tinker this
   # auto_pause_delay_in_minutes = 10
 
+  # TODO: Enable differential backup & compression
   short_term_retention_policy {
     retention_days           = var.sqlserver_database_retention_days
     backup_interval_in_hours = var.sqlserver_database_retention_interval
@@ -30,6 +31,7 @@ resource "azurerm_mssql_database" "sqlserver" {
     weekly_retention  = var.sqlserver_database_retention_weeks
     monthly_retention = var.sqlserver_database_retention_months
     yearly_retention  = "PT0S"
+    week_of_year      = "1"
   }
 
 

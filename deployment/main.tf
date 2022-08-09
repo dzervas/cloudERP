@@ -14,5 +14,5 @@ provider "azurerm" {
 }
 
 data "azurerm_resource_group" "base" {
-  name     = lower("${var.tags.app}-${var.tags.client}-${var.tags.environment}")
+  name = lower("${var.tags.app}-${var.tags.client}-${var.tags.environment}")
 }
