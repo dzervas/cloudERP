@@ -49,6 +49,17 @@ resource "azurerm_automation_account" "automation" {
   tags = var.tags
 }
 
+
+resource "azurerm_automation_module" "auzreadpreview" {
+  name                    = "AzureADPreview"
+  resource_group_name     = data.azurerm_resource_group.base.name
+  automation_account_name = azurerm_automation_account.automation.name
+
+  module_link {
+    uri = "AzureADPreview"
+  }
+}
+
 # Logging
 
 resource "azurerm_log_analytics_workspace" "logs" {

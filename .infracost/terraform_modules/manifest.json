@@ -1,1 +1,1 @@
-{"Modules":[]}
+{"Modules":[{"Key":"vpn","Source":"./vpn","Dir":"vpn"},{"Key":"appserver","Source":"./appserver","Dir":"appserver"},{"Key":"sqlserver","Source":"./sqlserver","Dir":"sqlserver"}]}
